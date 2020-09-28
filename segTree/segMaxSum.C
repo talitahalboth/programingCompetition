@@ -3,9 +3,9 @@
 #define se second
 #define pb push_back
 #define mp make_pair
-#define para(X,Y) for (int (X) = 0;(X) < (Y);++(X))
-#define paraIni(X,S,Y) for (int (X) = S;(X) < (Y);++(X))
-#define rpara(X,Y) for (int (X) = (Y)-1;(X) >=0;--(X))
+#define para(X,Y) for (ll (X) = 0;(X) < (Y);++(X))
+#define paraIni(X,S,Y) for (ll (X) = S;(X) < (Y);++(X))
+#define rpara(X,Y) for (ll (X) = (Y)-1;(X) >=0;--(X))
 #define all(X) (X).begin(),(X).end()
 #define rall(X) (X).rbegin(),(X).rend()
 #define unicos(X) (X).erase(unique(all(X)),(X).end())
@@ -21,8 +21,7 @@ using namespace std;
 
 struct item
 {
-    ll m, c;
-    
+    ll seg, pref, suf, sum;    
 };
 
 struct segtree 
@@ -30,7 +29,7 @@ struct segtree
     ll size;
     vector<item> value;
 
-    item NEUTRAL_ELEM = {iinf, 0};
+    item NEUTRAL_ELEM = {0,0,0,0};
     void init(ll n)
     {
         size=1;
@@ -41,14 +40,17 @@ struct segtree
     }
     item merge(item a, item b)
     {
-        if (a.m < b.m) return a;
-        if (a.m > b.m) return b;
-        return{a.m, a.c+b.c};
+        ll seg = max(a.seg, max(b.seg, a.suf+b.pref));
+        ll pref = max(a.pref, a.sum+b.pref);
+        ll suf = max(b.suf, b.sum + a.suf);
+        ll sum = a.sum+b.sum;
+        return{ seg, pref, suf, sum};
     }
 
     item single(ll v)
     {
-        return {v, 1};
+        ll maior = v>0?v:0;
+        return {maior, maior, maior, v};
     }
     void build(vector<ll> &a, ll x, ll lx, ll rx)
     {
@@ -95,54 +97,45 @@ struct segtree
         set(i,v,0,0,size);
     }
 
-    item sum(ll l, ll r, ll x, ll lx, ll rx)
+    item find(ll l, ll r, ll x, ll lx, ll rx)
     {
         if (lx >= r || l >= rx)
             return NEUTRAL_ELEM;
         if (lx >= l && rx <= r) return value[x];
 
         ll m = (lx+rx)/2;
-        item s1 = sum(l,r,x*2+1, lx, m);
-        item s2 = sum(l,r,x*2+2, m, rx);
+        item s1 = find(l,r,x*2+1, lx, m);
+        item s2 = find(l,r,x*2+2, m, rx);
         return merge(s1,s2);
     }
 
-    item sum(ll l, ll r)
+    item find(ll l, ll r)
     {
-        return sum(l,r,0,0,size);
+        return find(l,r,0,0,size);
     }
 };
 
 int main(){
     ios_base::sync_with_stdio(false); cin.tie(0);
-    int n,m;
+    ll n,m;
     cin >> n >> m;
 
     segtree st;
     st.init(n);
     vector <ll> a(n);
-    for (int i = 0; i < n; ++i)
+    for (ll i = 0; i < n; ++i)
     {
         cin >> a[i];        
     }
     st.build(a);
+    printf("%lld\n",st.value[0].seg);
     while(m--)
     {
-        int op;
-        cin >> op;
-        if (op==1)
-        {
-            int i,v;
-            cin >> i >> v;
-            st.set(i,v);
-        }
-        else
-        {
-            int l,r;
-            cin >> l >> r;
-            item ans = st.sum(l,r);
-            cout << ans.m << " " <<ans.c << '\n';
-        }
+        ll i,v;
+        cin >> i >> v;
+        st.set(i,v);
+        printf("%lld\n",st.value[0].seg);
+        
     }
   
     return 0;

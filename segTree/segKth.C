@@ -21,7 +21,7 @@ using namespace std;
 
 struct item
 {
-    ll m, c;
+    ll i;
     
 };
 
@@ -30,7 +30,7 @@ struct segtree
     ll size;
     vector<item> value;
 
-    item NEUTRAL_ELEM = {iinf, 0};
+    item NEUTRAL_ELEM = {0};
     void init(ll n)
     {
         size=1;
@@ -41,14 +41,16 @@ struct segtree
     }
     item merge(item a, item b)
     {
-        if (a.m < b.m) return a;
-        if (a.m > b.m) return b;
-        return{a.m, a.c+b.c};
+        return {a.i+b.i};
     }
 
     item single(ll v)
     {
-        return {v, 1};
+        return {v};
+    }
+    pair <int, int> child(int x)
+    {
+        return {2*x+1, 2*x+2};
     }
     void build(vector<ll> &a, ll x, ll lx, ll rx)
     {
@@ -72,11 +74,11 @@ struct segtree
         build(a, 0, 0, size);
     }
 
-    void set(ll i, ll v, ll x, ll lx, ll rx)
+    void set(ll i,ll v, ll x, ll lx, ll rx)
     {
         if (rx-lx==1)
         {
-            value[x]=single(v);
+            value[x] = single(v);
             return;
         }
         ll m = (lx+rx)/2;
@@ -95,21 +97,34 @@ struct segtree
         set(i,v,0,0,size);
     }
 
-    item sum(ll l, ll r, ll x, ll lx, ll rx)
+    int find(ll k, ll x, ll lx, ll rx)
     {
-        if (lx >= r || l >= rx)
-            return NEUTRAL_ELEM;
-        if (lx >= l && rx <= r) return value[x];
+        if (rx-lx==1)
+        {
+            if (value[x].i)
+            {
+                return (x - (size-1));
+            }
+            else return 0;
+        }
 
         ll m = (lx+rx)/2;
-        item s1 = sum(l,r,x*2+1, lx, m);
-        item s2 = sum(l,r,x*2+2, m, rx);
-        return merge(s1,s2);
+        if (value[x*2+1].i > k)
+        {
+            return find(k,x*2+1,lx,m);
+            //vai pra esquerda
+        }
+        else
+        {
+            k = k - value[x*2+1].i;
+            return find(k,x*2+2,m,rx);
+            //vai pra direita
+        }
     }
 
-    item sum(ll l, ll r)
+    int find(ll k)
     {
-        return sum(l,r,0,0,size);
+        return find(k,0,0,size);
     }
 };
 
@@ -126,22 +141,30 @@ int main(){
         cin >> a[i];        
     }
     st.build(a);
+    // printf("%lld\n",st.size );
+    for (int i = 0; i < st.value.size(); ++i)
+    {
+        // printf("%lld ",st.value[i].i );
+    }
     while(m--)
     {
         int op;
         cin >> op;
         if (op==1)
         {
-            int i,v;
-            cin >> i >> v;
+            int i;
+            cin >> i;
+            int v = !st.value[i+(st.size-1)].i;
             st.set(i,v);
         }
         else
         {
-            int l,r;
-            cin >> l >> r;
-            item ans = st.sum(l,r);
-            cout << ans.m << " " <<ans.c << '\n';
+            int k;
+            cin >> k;
+            int val = st.find(k);
+            cout << val << '\n';
+            // item ans = st.find(l,r);
+            // cout << ans.m << " " <<ans.c << '\n';
         }
     }
   
