@@ -1,6 +1,6 @@
 # Repository with my Programming Competition Codes sorted by category
 
-The problems are named after the judge and the problem number / code. 
+(most) of the problems are named after the judge and the problem number / code. 
 
 uri: https://www.urionlinejudge.com.br/
 
