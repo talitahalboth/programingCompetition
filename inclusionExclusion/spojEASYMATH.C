@@ -143,6 +143,27 @@ ll include_exclude(ll n, ll a[5]) {
   } 
   return ret; 
 } 
+
+long long include_exclude_v2(int n, int a[5]) { 
+  long long ret = n, lcm[1 << 5] = {1}, sign[1 << 5] = {1}; 
+ 
+  for (int i = 0; i < 5; ++i) { 
+    // Process the ith element: Add a[i] to every set processed till now 
+    for (int j = 0, k = 1 << i; j < (1 << i); ++j, ++k) { 
+      sign[k] = -sign[j]; 
+      long long g = gcd(lcm[j], a[i]); 
+      if (n / lcm[j] < a[i] / g) { 
+        lcm[k] = n + 1; 
+      } else { 
+        lcm[k] = lcm[j] * (a[i] / g); 
+      } 
+      ret += sign[k] * (n / lcm[k]); 
+    } 
+  } 
+ 
+  return ret; 
+} 
+
 int main(){
     ios_base::sync_with_stdio(false); cin.tie(0);
     ll t;
