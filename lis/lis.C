@@ -31,14 +31,14 @@ void dp(int pos)
 	// length of lis at pos is at least one (itself)
 	int longest = 1;
 	int longestIndex = -1;
-	// test every number before pos
+	// tests every number before pos
 	// see if its possible to extend the sequence
-	for (int i = 0; i<=pos-1; ++i)
+	for (int i = 0; i< pos; ++i)
 	{
-		// is possible
+		// its possible
 		if (a[pos] > a[i])
 		{
-			// and no other index increased the list
+			// and no other index increased the list yet
 			if (longestIndex == -1 )
 			{
 				//takes this index

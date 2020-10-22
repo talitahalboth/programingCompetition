@@ -24,33 +24,45 @@ using namespace std;
 struct segtree 
 {
     int size;
-    vector<ll> minimum;
+    vector<int> minimum;
 
     void init(int n)
     {
         size=1;
         while(size<n)
             size*=2;
+        // if (2*size > 10*MAX)
+        // {
+        //     cout << size << endl;
+        //     cout << "erro"<<endl;
+        //     exit (0);
+        // }
+        // for (int i = 0; i < 2*size; ++i)
+        // {
+        //     if (i >= 10*MAX)
+        //         exit (0);
+        //     minimum[i] = iinf;
+        // }
         minimum.assign(2*size, iinf);
 
     }
-    void build(vector<ll> &a, int x, int lx, int rx)
+    void build(ll a[], int x, int lx, int rx, int tam)
     {
         if (rx-lx == 1)
         {
-            if (lx < (int)a.size())
+            if (lx < (int)tam)
                 minimum[x] = a[lx];
             return;
         }
         int m = (lx+rx)/2;
-        build(a,2*x+1, lx, m);
-        build(a,2*x+2, m, rx);
+        build(a,2*x+1, lx, m, tam);
+        build(a,2*x+2, m, rx, tam);
         minimum[x] = min(minimum[2*x+1], minimum[2*x+2]);
     }
 
-    void build(vector<ll> &a)
+    void build(ll a[], int tam)
     {
-        build(a, 0, 0, size);
+        build(a, 0, 0, size, tam);
     }
 
     void set(int i, int v, int x, int lx, int rx)
@@ -190,24 +202,89 @@ void buildLCPArray(string &s, int n)
         k = max(k-1,0);
     }
 }
+void printPair(pii p)
+{
+    cout << p.fi << " " << p.se;
+}
+segtree st;
+// return true if p1 < p2
+bool compare(pii p1, pii p2)
+{
+    if (p1 == p2)
+        return true;
+    if (p1.fi == p2.fi)
+    {
+        // smalles wins
+        if (p1.se <= p2.se)
+            return true;
+        return false;
+    }
+    int sizeP1 = p1.se - p1.fi + 1;
+    int sizeP2 = p2.se - p2.fi + 1;
+    int p1i = c[p1.fi];
+    int p2i = c[p2.fi];
 
+
+    int mini = st.minim(min(p1i, p2i)+1, max(p1i, p2i)+1);
+
+
+    // if the number of equal prefix is bigger than the size of the smallest
+    // means the smallest should come first
+    //if they have the same length, smallest l first, if l is equal smalles r
+    if (mini >= min(sizeP1, sizeP2))
+    {
+        if (sizeP1 < sizeP2)
+            return true;
+        if (sizeP2 < sizeP1)
+            return false;
+        if (p1.fi < p2.fi)
+            return true;
+        if (p2.fi < p1.fi)
+            return false;
+
+        return true;
+    }
+    if (p1i < p2i)
+        return true;
+    return false;
+
+}
+pii substr[MAX];
+ll v[MAX];
 int main(){
     ios_base::sync_with_stdio(false); cin.tie(0);
     string s;
     cin >> s;
-    s.pb('$');
+    s.pb(2);
     int n = s.size();
     suffixArray(s,n);
     buildLCPArray(s,n);
 
-    segtree st;
     st.init(n);
-    vector <ll> a(n);
+    // vector <ll> a(n);
     for (int i = 0; i < n; ++i)
     {
-        a[i] = lcp[i];        
+        // cout << p[i] << " " <<c[i]<< endl;
+        v[i] = lcp[i];        
     }
-    st.build(a);
+
+    st.build(v,n);
+    int m;
+    cin >> m;
+    // vector<pii> substr;
+    for (int i = 0; i < m; ++i)
+    {
+        int l,r;
+        cin >> l >> r;
+        substr[i] = mp(l-1, r-1);
+        // substr.pb(mp(l-1,r-1));
+    }
+    sort(substr, substr+m, compare);
+    for (int i = 0; i < m; ++i)
+    {
+        cout << substr[i].fi+1 << " " <<substr[i].se+1 << endl;
+    }
+
   
     return 0;
 }

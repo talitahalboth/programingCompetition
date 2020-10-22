@@ -125,21 +125,21 @@ int main(){
     suffixArray(s,n);
     buildLCPArray(s,n);
     
-    // for (int i = 0; i < n; ++i)
-    // {
-    //     cout <<lcp[i] <<" " << p[i] <<" " << s.substr(p[i], n-p[i]);
-    //     cout << '\n';
-    // }
     for (int i = 0; i < n; ++i)
     {
-        cout <<p[i] <<" ";
+        cout <<lcp[i] <<" " << p[i] <<" " << s.substr(p[i], n-p[i]);
+        cout << '\n';
     }
-    cout << endl;
-    for (int i = 1; i < n; ++i)
-    {
-        cout <<lcp[i] <<" ";
-    }
-    cout << endl;
+    // for (int i = 0; i < n; ++i)
+    // {
+    //     cout <<p[i] <<" ";
+    // }
+    // cout << endl;
+    // for (int i = 1; i < n; ++i)
+    // {
+    //     cout <<lcp[i] <<" ";
+    // }
+    // cout << endl;
   
     return 0;
 }
